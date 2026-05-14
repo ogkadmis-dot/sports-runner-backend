@@ -3,7 +3,15 @@ const Stripe = require('stripe');
 const cors = require('cors');
 
 const app = express();
-app.use(cors());
+
+// Allow all origins - required for Netlify to talk to Railway
+app.use(cors({
+  origin: '*',
+  methods: ['GET', 'POST', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
+app.options('*', cors());
 app.use(express.json());
 
 const stripe = Stripe(process.env.STRIPE_SECRET_KEY || 'sk_test_placeholder');
@@ -34,13 +42,13 @@ app.post('/create-checkout', async (req, res) => {
     });
     res.json({ url: session.url, sessionId: session.id });
   } catch (err) {
-    console.error('Stripe error:', err);
+    console.error('Stripe error:', err.message);
     res.status(500).json({ error: err.message });
   }
 });
 
 app.get('/', (req, res) => {
-  res.json({ status: 'Sports Runner backend running' });
+  res.json({ status: 'Sports Runner backend running', version: '1.0' });
 });
 
 const PORT = process.env.PORT || 3000;
