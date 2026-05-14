@@ -7,11 +7,11 @@ app.use(cors({ origin: '*', methods: ['GET', 'POST', 'OPTIONS'], allowedHeaders:
 app.options('*', cors());
 app.use(express.json());
 
-const KEY = 'sk_test_51TWqU95R' + '0RQYKYiOCYYlDQ4vZmcQFP3sJdY9nq5dOQ3fzKVsHIF7LRcVh6cWurDAeLkuutGTfNWKGJ8GBVfBQTBP000t8iC9FD';
-const stripe = Stripe(KEY);
+const KEY = process.env.STRIPE_SECRET_KEY || 'sk_test_51TWqU95RORQYKYiOCYYlDQ4vZmcQFP3sJdY9nq5dOQ3fzKVsHIF7LRcVh6cWurDAeLkuutGTfNWKGJ8GBVfBQTBP000t8iC9FD';
+const stripe = Stripe(KEY.trim());
 const FRONTEND = 'https://sportsrunner.netlify.app';
 
-console.log('KEY CHECK:', KEY.substring(0, 25));
+console.log('KEY CHECK:', KEY.trim().substring(0, 25));
 
 app.post('/create-checkout', async (req, res) => {
   try {
@@ -39,7 +39,7 @@ app.post('/create-checkout', async (req, res) => {
   }
 });
 
-app.get('/', (req, res) => { res.json({ status: 'ok', key: KEY.substring(0, 20) }); });
+app.get('/', (req, res) => { res.json({ status: 'ok', key: KEY.trim().substring(0, 25) }); });
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log('Running on port ' + PORT));
