@@ -100,7 +100,8 @@ app.post('/refund-order', async (req, res) => {
       sessionId,
       paymentIntentId,
       chargeId,
-      reason
+      reason,
+      idempotencyKey
     } = req.body;
 
     if (!orderId) {
@@ -142,7 +143,11 @@ app.post('/refund-order', async (req, res) => {
       refundPayload.charge = charge;
     }
 
-    const refund = await stripe.refunds.create(refundPayload);
+    const refund = await stripe.refunds.create(refundPayload, {
+      idempotencyKey:
+        idempotencyKey ||
+        ('sportsrunner_refund_' + String(orderId) + '_' + String(refundAmount))
+    });
 
     res.json({
       ok: true,
